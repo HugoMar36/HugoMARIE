@@ -6,74 +6,80 @@
 #define size 9 
 
 
-void initialiserMatrice(int** matrice, int n, int m)
-{
-    int i=0, j=0;
- 
-    matrice=malloc(n*sizeof(int*));
-    printf("size matrice: %ld\n", sizeof(matrice));
-    if (matrice==NULL)
-    {
-        printf("Allocation impossible");
-        exit(0);
-    }
- 
- 
-    for(i=0; i<n; i++)
-    {
-        matrice[i]=calloc(m, sizeof(int));
- 
-        if(matrice[i]==NULL)
-        {
-            printf("Allocation impossible");
-            exit(0);
-        }
-    }
- 
- 
-    for(i=0; i<n; i++){
-        for(j=0; j<m; j++){
-            matrice[i][j]=0;
-        }
-    }
-}
-
+int** creer_grille()
+	{
+ 	int **matrice;
+ 	matrice=malloc(9*sizeof(int*));
+ 	for(int i=0; i<9;i++){
+ 		matrice[i]=calloc(9, sizeof(int));
+ 	}
+ 	return(matrice);
+	}
 
 void fill_diag( int **area){
 	int j=0;
-	unsigned int deja_vu[9];
-	unsigned int gen_nmb;
-	unsigned int ind=0;
-	bool test=true;
+	int *deja_vu=calloc(9,sizeof(int));
+	int gen_nmb;
+	int ind=0;
+	bool test=false;
 	while(j<9){
 		for(int i=j; i<j+3; i++){
 			for(int k=j; k<j+3; k++){
-				gen_nmb=rand()%10+1;
-				for(int q=0; q<9;q++){ 
-					if(gen_nmb==deja_vu[q]){
-						test =false;
-					}}
-				if(test){
-					area[i][k]=gen_nmb;
-					deja_vu[ind]=gen_nmb;
-					ind+=1;
-					}
-
-			}
-
+				while(test==false){
+					gen_nmb=rand()%9+1;
+					test=true;
+					for(int q=0; q<9;q++){ 
+						if(gen_nmb==deja_vu[q]){
+						test =false;						
+					}}}
+				area[i][k]=gen_nmb;
+				deja_vu[ind]=gen_nmb;
+				ind+=1;
+				test=false;
+				}}
+				j=j+3;
+				for(int q=0; q<9;q++) deja_vu[q]=0;
+				ind=0;
 		}
 
-		j=j+42;
+}
+
+void afficher_grille(int **matrice){
+	for(int i=0; i<9; i++){
+			for(int k=0; k<9; k++){
+				printf("%d ", matrice[i][k]);
+				}printf("\n");}
+}
+
+
+bool is_safe_here(int nmb, int p, int q, int** matrice){
+	bool test=true;
+	int *deja_vu_li=calloc(9,sizeof(int));
+	int *deja_vu_col=calloc(9,sizeof(int));
+	int ind=0;
+	for(int i=0; i<9;i++){
+		if(i!=q){deja_vu_li[i]=matrice[p][i];}
+		if(i!=p){deja_vu_col[i]=matrice[i][q];}
 	}
+	for(int j=0; j<9;j++){ 
+		if(nmb==deja_vu_li[j] || nmb==deja_vu_col[j]){
+			test =false;						
+		}}
+	return test;
+}
+
+int** fill_grille(int ** matrice){
+	
 }
 
 int main (){
-	int **sudoku;
-	initialiserMatrice(sudoku,9,9);
+	srand(time(NULL));
+	int **sudoku=creer_grille();
+	printf("%d\n",sudoku[3][2]);
+
 	fill_diag(sudoku);
-	for(int i=0; i<9; i++){
-			for(int k=0; k<9; k++){
-				printf("%d\n", sudoku[i][k]);
-}}
+	afficher_grille(sudoku);
+
+
 return 0;
 }
