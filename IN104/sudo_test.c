@@ -54,8 +54,7 @@ void afficher_grille(int **matrice){
 
 bool absent_sur_bloc (int p, int q, int nmb, int** matrice){
 	bool res=true;
-	int *deja_vu_bloc=calloc(9,sizeof(int));
-	int indice=0;
+	
 
 	int li_ref = p - p%3 ; //nous ramène toujours à la première ligne du bloc : ligne de reference
 	int co_ref = q - q%3 ; //nous ramène toujours à la première colonnedu bloc : colonne de reference
@@ -64,39 +63,35 @@ bool absent_sur_bloc (int p, int q, int nmb, int** matrice){
 	/* On remplit déjà vu */
 	for (int i=li_ref;i<li_ref+3;i++){
 		for (int j=co_ref;j<co_ref+3;j++){
-			if (i!=p || j!=q){
-				deja_vu_bloc[indice]=matrice[i][j];
-				indice++;
+			if (nmb == matrice[i][j]){
+				res = false;
+				return res;
 			}
 		}
 	}
 
-	/* On teste si on peut bien mettre nmb là dedans */
-	for (int k=0;k<9;k++){
-		if (nmb == deja_vu_bloc[k]){
-			res = false;
-			return res;
-		}
-	}
 
 	return res;
 }
 
 
 bool absent_li_et_co (int nmb, int p, int q, int** matrice){
-	bool test=true;
-	int *deja_vu_li=calloc(9,sizeof(int));
-	int *deja_vu_col=calloc(9,sizeof(int));
-	int ind=0;
+	
+	
+	//parcours colonne
 	for(int i=0; i<9;i++){
-		deja_vu_li[i]=matrice[p][i];
-		deja_vu_col[i]=matrice[i][q];
+		if (nmb == matrice[i][q]){
+			return false;
+		}
 	}
+
+	//parcours ligne
 	for(int j=0; j<9;j++){ 
-		if(nmb==deja_vu_li[j] || nmb==deja_vu_col[j]){
-			test =false;						
-		}}
-	return test;
+		if(nmb==matrice[p][j]){
+			return false;						
+		}
+	}
+	return true;
 }
 
 
@@ -128,14 +123,18 @@ void fill_reste_grille(int ** matrice){
 	for (int i=6;i<9;i++){
 		for (int j=0;j<6;j++){
 			
-			test = is_safe_here(nmb,i,j,matrice);
-			while (test==false){
-				nmb = nmb + 1;
-				//printf("ind %d\n",ind);
+			while (matrice[i][j]==0){
 				test = is_safe_here(nmb,i,j,matrice);
+				if (test == false){
+					nmb = nmb + 1;
+					test = is_safe_here(nmb,i,j,matrice);
+				} else if (test==true){
+					matrice[i][j]=nmb;
+					nmb = 1;
+				}
+
 			}
-			if (test) matrice[i][j]=nmb;
-			nmb = 1;
+		
 		}
 	} 
 	
